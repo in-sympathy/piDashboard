@@ -429,9 +429,14 @@ while True:
       time.sleep(0.1)
       
     elif (value | 0xFF) == 0xFF:
-      print("right - Something else")
+      print("right - CPU")
       draw.rectangle((0,0,width,height), outline=0, fill=0)      
-      draw.text((x, top), ("Something Else:"), font=headerFont, fill=255)
+      draw.text((x, top), ("Resources:"), font=headerFont, fill=255)
+      draw.text((x, top+1), "________", font=textFont, fill=255)
+      draw.text((x, top+15), "CPU Load: ", font=textFont, fill=255)
+      draw.text((x, top+27), "CPU Temp: ", font=textFont, fill=255)
+      draw.text((x, top+39), "GPU Load: ", font=textFont, fill=255)
+      draw.text((x, top+51), "Disk: ", font=textFont, fill=25
       disp.image(image)
       disp.display()
       time.sleep(6)
@@ -443,13 +448,28 @@ while True:
    
   #checking for battery level to initiate safe shutdown below 10%:
   if p < 10 and current < 0:
-    disp.clear()
-    disp.display()
+    beepAddress = 0x20
+    def beep_on():
+      bus.write_byte(address,0x7F&bus.read_byte(beepAddress))
+    def beep_off():
+      bus.write_byte(address,0x80|bus.read_byte(beepAddress))
+    def led_off():
+      bus.write_byte(address,0x10|bus.read_byte(address))
+    def led_on():
+      bus.write_byte(address,0xEF&bus.read_byte(address))
+                     
+    draw.rectangle((0,0,width,height), outline=0, fill=0)  
     draw.text((x, top), ("WARNING:"), font=font, fill=255)
     draw.text((x, top+20), ("Low Battery"), font=font, fill=255)
     draw.text((x, top+40), ("Shutting down"), font=font, fill=255)
     disp.image(image)
     disp.display()
+    for i in range(1, 6):
+      beep_on()
+      led_on()
+      time.sleep(1)
+      beep_off()
+      led_off()                   
     time.sleep(6)
     exit_status = os.system("sudo poweroff")
     #elif value != 0xFF:
