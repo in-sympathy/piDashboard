@@ -436,7 +436,7 @@ while True:
       draw.text((x, top+15), "CPU Load: ", font=textFont, fill=255)
       draw.text((x, top+27), "CPU Temp: ", font=textFont, fill=255)
       draw.text((x, top+39), "GPU Load: ", font=textFont, fill=255)
-      draw.text((x, top+51), "Disk: ", font=textFont, fill=25
+      draw.text((x, top+51), "Disk: ", font=textFont, fill=255)
       disp.image(image)
       disp.display()
       time.sleep(6)
@@ -464,12 +464,13 @@ while True:
     draw.text((x, top+40), ("Shutting down"), font=font, fill=255)
     disp.image(image)
     disp.display()
-    for i in range(1, 6):
+    for i in range(1, 4):
       beep_on()
       led_on()
-      time.sleep(1)
+      time.sleep(0.1)
       beep_off()
-      led_off()                   
+      led_off()
+      time.sleep(0.1)
     time.sleep(6)
     exit_status = os.system("sudo poweroff")
     #elif value != 0xFF:
