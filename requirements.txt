@@ -1,0 +1,7 @@
+pillow==10.2.0
+pypng==0.20220715.0
+qrcode==7.4.2
+RPi.GPIO==0.7.1
+smbus==1.1.post2
+spidev==3.6
+typing-extensions==4.10.0
