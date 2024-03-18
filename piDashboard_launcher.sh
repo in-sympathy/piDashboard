@@ -164,8 +164,8 @@ if [[ -f "piDashboard/bin/activate" ]]; then
   source ${PWD##*/}/bin/activate
   sleep 1
   echo "Activated. Upgrading requirements"
-  #pip install --upgrade -r requirements.txt
-  echo "Installed all of the requirements"
+  pip install --upgrade -r requirements.txt
+  echo "All of the requirements are up to date"
 else
   echo "Creating virtual environment:"
   sleep 1

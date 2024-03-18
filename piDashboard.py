@@ -306,7 +306,7 @@ while True:
   
   # Draw data on the image
   draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
-  draw.text((x, top+1), "_______________________", font=headerFont, fill=255)
+  draw.text((x, top+1), "_______________________", font=textFont, fill=255)
   draw.text((x, top+15), "CPU Load: ", font=textFont, fill=255)
   draw.text((x, top+27), "RAM: ", font=textFont, fill=255)
   draw.text((x, top+39), "Power: {:1.3f} W".format(power), font=textFont, fill=255)
@@ -323,67 +323,21 @@ while True:
   #draw = ImageDraw.Draw(blankImage)
   
   #checking for joystick buttons being pressed:
-  address = 0x20
-  bus = smbus.SMBus(1)
-  bus.write_byte(address,0x0F|bus.read_byte(address))
-  value = bus.read_byte(address) | 0xF0
   
-  while value != 0xFF:
-    if (value | 0xFE) != 0xFF:
-      print("left - Network")
-      #Interface, Int IP, Ext IP
-      draw.rectangle((0,0,width,height), outline=0, fill=0)
-      draw.text((x, top), ("Network:"), font=headerFont, fill=255)
-      draw.text((x, top+1), "________", font=headerFont, fill=255)
-      draw.text((x, top+15), "Interface: ", font=textFont, fill=255)
-      draw.text((x, top+27), "Int IP: ", font=textFont, fill=255)
-      draw.text((x, top+39), "Ext IP: ", font=textFont, fill=255)
-      draw.text((x, top+51), "***", font=textFont, fill=255)
-      disp.image(image)
-      disp.display()
-      time.sleep(6)
-      bus.write_byte(address,0x0F|bus.read_byte(address))
-      value = bus.read_byte(address) | 0xF0
-      time.sleep(0.1)
-      
-    elif (value | 0xFD) != 0xFF:
-      print("up - UPS Stats")
-      draw.rectangle((0,0,width,height), outline=0, fill=0)
-      draw.text((x, top), ("UPS Stats:"), font=headerFont, fill=255)
-      draw.text((x, top+1), "__________", font=headerFont, fill=255)
-      draw.text((x, top+15), "Load Voltage: {:1.2f} V".format(bus_voltage), font=textFont, fill=255)
-      draw.text((x, top+27), "Current: {:1.4f} A".format(current/1000), font=textFont, fill=255)
-      draw.text((x, top+39), "Power: {:1.3f} W".format(power), font=textFont, fill=255)
-      draw.text((x, top+51), "Percent: {:1.1f}%".format(p), font=textFont, fill=255)
-      disp.image(image)
-      disp.display()
-      time.sleep(6)
-      bus.write_byte(address,0x0F|bus.read_byte(address))
-      value = bus.read_byte(address) | 0xF0
-      time.sleep(0.1)
-      
-    elif (value | 0xFB) != 0xFF:
-      print("down - Climate")
-      draw.rectangle((0,0,width,height), outline=0, fill=0)
-      draw.text((x, top), ("Climate:"), font=headerFont, fill=255)
-      draw.text((x, top+1), "________", font=headerFont, fill=255)
-      draw.text((x, top+15), "Temp: ", font=textFont, fill=255)
-      draw.text((x, top+27), "Hum: ", font=textFont, fill=255)
-      draw.text((x, top+39), "Press: ", font=textFont, fill=255)
-      draw.text((x, top+51), "CO2: ", font=textFont, fill=255)
-      disp.image(image)
-      disp.display()
-      time.sleep(6)
-      bus.write_byte(address,0x0F|bus.read_byte(address))
-      value = bus.read_byte(address) | 0xF0
-      time.sleep(0.1)
-      
-    elif (value | 0xFF) == 0xFF:
-      print("right - Connect via WebSSH:")
+  #center button to display QR code:
+  KEY = 20
+  GPIO.setmode(GPIO.BCM)
+  GPIO.setup(KEY,GPIO.IN,GPIO.PUD_UP)
+  
+  if GPIO.input(KEY) == 0:
+    while GPIO.input(KEY) == 0:
+      time.sleep(0.01)
+      print("Center - Showing QR Code to Connect via WebSSH:")
+
       draw.rectangle((0,0,width,height), outline=0, fill=0)      
-        
+
       username = os.getlogin()
-      
+
       url = "ssh://" + str(username) + "@" + "192.168.81.99"  # Replace with your desired URL
       print (url)
 
@@ -415,17 +369,85 @@ while True:
       disp.image(oled_img)
       disp.display()
       time.sleep(6)
+
+              
+  
+  #now checking for arrow keys:
+  address = 0x20
+  bus = smbus.SMBus(1)
+  bus.write_byte(address,0x0F|bus.read_byte(address))
+  value = bus.read_byte(address) | 0xF0
+  
+  while value != 0xFF:
+    if (value | 0xFE) != 0xFF:
+      print("left - Network")
+      #Interface, Int IP, Ext IP
+      draw.rectangle((0,0,width,height), outline=0, fill=0)
+      draw.text((x, top), ("Network:"), font=headerFont, fill=255)
+      draw.text((x, top+1), "________", font=textFont, fill=255)
+      draw.text((x, top+15), "Interface: ", font=textFont, fill=255)
+      draw.text((x, top+27), "Int IP: ", font=textFont, fill=255)
+      draw.text((x, top+39), "Ext IP: ", font=textFont, fill=255)
+      draw.text((x, top+51), "***", font=textFont, fill=255)
+      disp.image(image)
+      disp.display()
+      time.sleep(6)
       bus.write_byte(address,0x0F|bus.read_byte(address))
       value = bus.read_byte(address) | 0xF0
       time.sleep(0.1)
+      
+    elif (value | 0xFD) != 0xFF:
+      print("up - UPS Stats")
+      draw.rectangle((0,0,width,height), outline=0, fill=0)
+      draw.text((x, top), ("UPS Stats:"), font=headerFont, fill=255)
+      draw.text((x, top+1), "__________", font=textFont, fill=255)
+      draw.text((x, top+15), "Load Voltage: {:1.2f} V".format(bus_voltage), font=textFont, fill=255)
+      draw.text((x, top+27), "Current: {:1.4f} A".format(current/1000), font=textFont, fill=255)
+      draw.text((x, top+39), "Power: {:1.3f} W".format(power), font=textFont, fill=255)
+      draw.text((x, top+51), "Percent: {:1.1f}%".format(p), font=textFont, fill=255)
+      disp.image(image)
+      disp.display()
+      time.sleep(6)
+      bus.write_byte(address,0x0F|bus.read_byte(address))
+      value = bus.read_byte(address) | 0xF0
+      time.sleep(0.1)
+      
+    elif (value | 0xFB) != 0xFF:
+      print("down - Climate")
+      draw.rectangle((0,0,width,height), outline=0, fill=0)
+      draw.text((x, top), ("Climate:"), font=headerFont, fill=255)
+      draw.text((x, top+1), "________", font=textFont, fill=255)
+      draw.text((x, top+15), "Temp: ", font=textFont, fill=255)
+      draw.text((x, top+27), "Hum: ", font=textFont, fill=255)
+      draw.text((x, top+39), "Press: ", font=textFont, fill=255)
+      draw.text((x, top+51), "CO2: ", font=textFont, fill=255)
+      disp.image(image)
+      disp.display()
+      time.sleep(6)
+      bus.write_byte(address,0x0F|bus.read_byte(address))
+      value = bus.read_byte(address) | 0xF0
+      time.sleep(0.1)
+      
+    elif (value | 0xFF) == 0xFF:
+      print("right - Something else")
+      draw.rectangle((0,0,width,height), outline=0, fill=0)      
+      draw.text((x, top), ("Something Else:"), font=headerFont, fill=255)
+      disp.image(image)
+      disp.display()
+      time.sleep(6)
+      bus.write_byte(address,0x0F|bus.read_byte(address))
+      value = bus.read_byte(address) | 0xF0
+      time.sleep(0.1)
+      
+      
    
   #checking for battery level to initiate safe shutdown below 10%:
   if p < 10 and current < 0:
     disp.clear()
     disp.display()
-    draw.text((x, top), ("WARNING:"), font=headerFont, fill=255)
-    draw.text((x, top+20), ("Low Battery"), font=textFont, fill=255)
-    draw.text((x, top+40), ("Shutting down"), font=textFont, fill=255)
+    draw.text((x, top), ("WARNING:"), font=font, fill=255)
+    draw.text((x, top+20), ("Low Battery"), font=font, fill=255)
+    draw.text((x, top+40), ("Shutting down"), font=font, fill=255)
     disp.image(image)
     disp.display()
     time.sleep(6)
