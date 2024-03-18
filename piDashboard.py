@@ -305,10 +305,9 @@ while True:
   formatted_datetime = now.strftime("%a, %b %d %Y, %H:%M")
   
   # Draw data on the image
-  draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
-  draw.text((x, top+1), "_______________________", font=textFont, fill=255)
-  draw.text((x, top+15), "CPU Load: ", font=textFont, fill=255)
-  draw.text((x, top+27), "RAM: ", font=textFont, fill=255)
+  draw.text((x, top), "CPU Temp: ", font=headerFont, fill=255)
+  draw.text((x, top+15), "RAM: ", font=textFont, fill=255)
+  draw.text((x, top+27), "Disk: ", font=textFont, fill=255)
   draw.text((x, top+39), "Power: {:1.3f} W".format(power), font=textFont, fill=255)
   draw.text((x, top+51), "Battery: {:1.1f}%".format(p), font=textFont, fill=255)
   # Display image.
@@ -429,14 +428,14 @@ while True:
       time.sleep(0.1)
       
     elif (value | 0xFF) == 0xFF:
-      print("right - CPU")
+      print("right - Motion")
       draw.rectangle((0,0,width,height), outline=0, fill=0)      
-      draw.text((x, top), ("Resources:"), font=headerFont, fill=255)
+      draw.text((x, top), ("Motion:"), font=headerFont, fill=255)
       draw.text((x, top+1), "________", font=textFont, fill=255)
-      draw.text((x, top+15), "CPU Load: ", font=textFont, fill=255)
-      draw.text((x, top+27), "CPU Temp: ", font=textFont, fill=255)
-      draw.text((x, top+39), "GPU Load: ", font=textFont, fill=255)
-      draw.text((x, top+51), "Disk: ", font=textFont, fill=255)
+      draw.text((x, top+15), "Status: ", font=textFont, fill=255)
+      draw.text((x, top+27), "***: ", font=textFont, fill=255)
+      draw.text((x, top+39), "***: ", font=textFont, fill=255)
+      draw.text((x, top+51), "***: ", font=textFont, fill=255)
       disp.image(image)
       disp.display()
       time.sleep(6)
