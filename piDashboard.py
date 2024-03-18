@@ -459,9 +459,9 @@ while True:
       bus.write_byte(address,0xEF&bus.read_byte(address))
                      
     draw.rectangle((0,0,width,height), outline=0, fill=0)  
-    draw.text((x, top), ("WARNING:"), font=font, fill=255)
-    draw.text((x, top+20), ("Low Battery"), font=font, fill=255)
-    draw.text((x, top+40), ("Shutting down"), font=font, fill=255)
+    draw.text((x, top), ("WARNING:"), font=headerFont, fill=255)
+    draw.text((x, top+15), ("Low Battery"), font=headerFont, fill=255)
+    draw.text((x, top+30), ("Shutting down"), font=headerFont, fill=255)
     disp.image(image)
     disp.display()
     for i in range(1, 4):
