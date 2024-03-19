@@ -305,11 +305,13 @@ while True:
   formatted_datetime = now.strftime("%a, %b %d %Y, %H:%M")
   
   # Draw data on the image
-  draw.text((x, top), "CPU Temp: ", font=headerFont, fill=255)
-  draw.text((x, top+15), "RAM: ", font=textFont, fill=255)
-  draw.text((x, top+27), "Disk: ", font=textFont, fill=255)
-  draw.text((x, top+39), "Power: {:1.3f} W".format(power), font=textFont, fill=255)
-  draw.text((x, top+51), "Battery: {:1.1f}%".format(p), font=textFont, fill=255)
+  draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
+  #draw.text((x, top), ("_______________________"), font=headerFont, fill=255)
+  draw.text((x, top+15), "# CPU Temp: ", font=textFont, fill=255)
+  draw.text((x, top+25), "# RAM: ", font=textFont, fill=255)
+  draw.text((x, top+35), "# Disk: ", font=textFont, fill=255)
+  draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
+  draw.text((x, top+55), "# Battery: {:1.1f}%".format(p), font=textFont, fill=255)
   # Display image.
   disp.image(image)
   disp.display()
