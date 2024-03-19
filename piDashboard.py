@@ -5,7 +5,10 @@ import spidev as SPI
 import SSD1306
 
 import os
-from pwd import getpwuid
+import subprocess
+import re
+#from pwd import getpwuid
+import psutil
 
 import RPi.GPIO as GPIO
 
@@ -234,11 +237,7 @@ disp.begin()
 
 
 
-
-#Configuring CPU and Memory Readings:
-
-
-
+#Configuring Memory Readings:
 
 
 
@@ -251,6 +250,90 @@ disp.begin()
 
 
 while True:
+  
+  #Configuring CPU Readings:
+  def get_cpu_temp():
+    """
+    Retrieves CPU temperature from Raspberry Pi using vcgencmd command.
+
+    Returns:
+        float: CPU temperature in degrees Celsius, or None if an error occurs.
+    """
+    try:
+      # Execute the vcgencmd command to get temperature
+      output = subprocess.run(["vcgencmd", "measure_temp"], capture_output=True, text=True, check=True)
+      # Extract the temperature value from the output
+      match = re.search(r"temp=(\d+\.?\d*)", output.stdout)
+      if match:
+        return float(match.group(1))
+      else:
+        return None
+    except subprocess.CalledProcessError:
+      # Error occurred during command execution
+      return None
+
+  # Get CPU temperature
+  cpu_temp = get_cpu_temp()
+
+  #if cpu_temp is not None:
+    #print("CPU temperature: {:.1f}°C".format(cpu_temp))
+  #else:
+    #print("Error: Could not read CPU temperature")
+    
+  #Configuring Memory Readings:
+  def get_ram_info():
+    """
+    Retrieves information about used RAM and total RAM capacity.
+
+    Returns:
+        tuple: (used_ram, total_ram), both in MB.
+    """
+    # Get memory usage statistics
+    mem = psutil.virtual_memory()
+    # Convert values from bytes to Megabytes (MB)
+    used_ram = mem.used / (1024 * 1024)
+    total_ram = mem.total / (1024 * 1024)
+    return used_ram, total_ram
+
+  # Get RAM information
+  used_ram, total_ram = get_ram_info()
+
+  # Print results. You can modify this for dashboard integration.
+  #print(f"Used RAM: {used_ram:.1f} MB")
+  #print(f"Total RAM: {total_ram:.1f} MB")
+      
+  #Getting Disk Space Info:
+  def get_disk_usage(path):
+    """
+    Gets the free space and total capacity of the disk containing the specified path.
+
+    Args:
+        path: A path on the system disk.
+
+    Returns:
+        tuple: (free_space_gb, total_capacity_gb), both in GB, or None if an error occurs.
+    """
+    try:
+      # Get disk usage statistics using os.statvfs
+      stat = os.statvfs(path)
+      # Calculate free space and total capacity in Gigabytes
+      free_space_gb = stat.f_bavail * stat.f_frsize / (1024 * 1024 * 1024)
+      total_capacity_gb = stat.f_blocks * stat.f_frsize / (1024 * 1024 * 1024)
+      return free_space_gb, total_capacity_gb
+    except OSError as e:
+      print(f"Error getting disk usage: {e}")
+      return None
+
+  # Get disk usage information (assuming / is on the system disk)
+  free_space_gb, total_capacity_gb = get_disk_usage("/")
+
+  """
+  if free_space_gb is not None and total_capacity_gb is not None:
+    print(f"Free space: {free_space_gb:.2f} GB")
+    print(f"Total capacity: {total_capacity_gb:.2f} GB")
+  else:
+    print("Error: Could not determine disk usage.")
+  """  
   # Clear display.
   #disp.clear()
   #disp.display()
@@ -307,9 +390,9 @@ while True:
   # Draw data on the image
   draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
   #draw.text((x, top), ("_______________________"), font=headerFont, fill=255)
-  draw.text((x, top+15), "# CPU Temp: 45 *C", font=textFont, fill=255)
-  draw.text((x, top+25), "# RAM: 810 MB / 1 GB free", font=textFont, fill=255)
-  draw.text((x, top+35), "# Disk: 21 of 32 GB Free", font=textFont, fill=255)
+  draw.text((x, top+15), "# CPU Temp: " + str(cpu_temp) + " *C", font=textFont, fill=255)
+  draw.text((x, top+25), f"# RAM: {used_ram:.0f} /  {total_ram:.0f} MB", font=textFont, fill=255)
+  draw.text((x, top+35), f"# Disk: {free_space_gb:.0f} of {total_capacity_gb:.0f} GB Free", font=textFont, fill=255)
   draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
   draw.text((x, top+55), "# Battery: {:1.1f}%".format(p), font=textFont, fill=255)
   # Display image.
