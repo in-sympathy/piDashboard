@@ -5,3 +5,4 @@ RPi.GPIO==0.7.1
 smbus==1.1.post2
 spidev==3.6
 typing-extensions==4.10.0
+netifaces==0.11.0
