@@ -22,13 +22,6 @@ else
   echo "No virtual environment is currently active."
 fi
 
-
-
-#getting a backup of config.txt for comparison:
-file1="/boot/firmware/config.txt"
-file2="config.bak"
-sudo cp "$file1" "$file2"
-
 echo "Activating necessary interfaces:"
 sleep 1
 # Check camera status using non-interactive raspi-config
