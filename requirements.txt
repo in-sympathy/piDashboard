@@ -1,9 +1,14 @@
+certifi==2024.2.2
+charset-normalizer==3.3.2
+idna==3.6
+netifaces==0.11.0
 pillow==10.2.0
+psutil==5.9.8
 pypng==0.20220715.0
 qrcode==7.4.2
+requests==2.31.0
 RPi.GPIO==0.7.1
 smbus==1.1.post2
 spidev==3.6
-typing-extensions==4.10.0
-netifaces==0.11.0
-psutil==5.9.8
+typing_extensions==4.10.0
+urllib3==2.2.1
