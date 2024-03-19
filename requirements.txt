@@ -6,3 +6,4 @@ smbus==1.1.post2
 spidev==3.6
 typing-extensions==4.10.0
 netifaces==0.11.0
+psutil==5.9.8
