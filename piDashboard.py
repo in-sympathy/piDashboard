@@ -10,6 +10,11 @@ import re
 #from pwd import getpwuid
 import psutil
 
+import socket
+import requests
+import urllib.request
+import netifaces as ni  # Install with: pip install netifaces
+
 import RPi.GPIO as GPIO
 
 from PIL import Image
@@ -237,17 +242,6 @@ disp.begin()
 
 
 
-#Configuring Memory Readings:
-
-
-
-
-#Configuring Network Stats:
-
-
-
-
-
 
 while True:
   
@@ -302,6 +296,10 @@ while True:
   #print(f"Used RAM: {used_ram:.1f} MB")
   #print(f"Total RAM: {total_ram:.1f} MB")
       
+  
+  
+  
+  
   #Getting Disk Space Info:
   def get_disk_usage(path):
     """
@@ -334,6 +332,76 @@ while True:
   else:
     print("Error: Could not determine disk usage.")
   """  
+  
+  
+  #Getting Network Stats:
+  def get_network_info():
+    """
+    Gets information about the active network interface and its IP addresses.
+
+    Returns:
+        dict: A dictionary containing keys:
+            - interface_name (str): Name of the active interface (e.g., wlan0, eth0).
+            - internal_ip (str): Internal IP address on the active interface.
+            - external_ip (str): External IP address obtained from a free service.
+    """
+    # Get list of available interfaces
+    interfaces = ni.interfaces()
+    # Find the active interface (connected and not loopback)
+    active_interface = None
+    for interface in interfaces:
+      if ni.ifaddresses(interface)[ni.AF_INET] and not interface == 'lo':
+        active_interface = interface
+        break
+
+    if not active_interface:
+      return {'interface_name': None, 'internal_ip': None, 'external_ip': None}
+
+    # Get internal IP address
+    internal_ip = ni.ifaddresses(active_interface)[ni.AF_INET][0]['addr']
+
+    # Get external IP address using a free service (example using ipify.org)
+    external_ip = get_external_ip_from_service()
+
+    return {
+        'interface_name': active_interface,
+        'internal_ip': internal_ip,
+        'external_ip': external_ip
+    }
+
+  def get_external_ip_from_service():
+    """
+    Retrieves external IP address from a free service (example using ipify.org).
+
+    Returns:
+        str: External IP address, or None if an error occurs.
+    """
+    try:
+      url = "https://api.ipify.org?format=text"  # Free JSON format available
+      response = requests.get(url)
+      return response.text.strip()
+    except Exception as e:
+      print(f"Error getting external IP: {e}")
+      return None
+
+  # Get network information
+  network_info = get_network_info()
+  
+  """
+  if network_info['interface_name']:
+    print(f"Interface: {network_info['interface_name']}")
+    print(f"Internal IP: {network_info['internal_ip']}")
+    print(f"External IP: {network_info['external_ip']}")
+  else:
+    print("No active network interface found.")
+  """
+  
+  
+  #Configuring Motion Screen
+  
+  
+  
+  
   # Clear display.
   #disp.clear()
   #disp.display()
@@ -409,6 +477,7 @@ while True:
   #checking for joystick buttons being pressed:
   
   #center button to display QR code:
+  username = os.getlogin()
   KEY = 20
   GPIO.setmode(GPIO.BCM)
   GPIO.setup(KEY,GPIO.IN,GPIO.PUD_UP)
@@ -419,8 +488,6 @@ while True:
       print("Center - Showing QR Code to Connect via WebSSH:")
 
       draw.rectangle((0,0,width,height), outline=0, fill=0)      
-
-      username = os.getlogin()
 
       url = "ssh://" + str(username) + "@" + "192.168.81.99"  # Replace with your desired URL
       print (url)
@@ -469,10 +536,13 @@ while True:
       draw.rectangle((0,0,width,height), outline=0, fill=0)
       draw.text((x, top), ("Network Stats:"), font=headerFont, fill=255)
       #draw.text((x, top+1), "________", font=textFont, fill=255)
-      draw.text((x, top+15), "# Interface: WLAN", font=textFont, fill=255)
-      draw.text((x, top+27), "# Int IP: 92.168.81.99", font=textFont, fill=255)
-      draw.text((x, top+39), "# Ext IP: 192.168.81.99", font=textFont, fill=255)
-      draw.text((x, top+51), "# Mask: 255.255.255.252", font=textFont, fill=255)
+      if network_info['interface_name']:
+        draw.text((x, top+15), f"# Interface: {network_info['interface_name']}", font=textFont, fill=255)
+        draw.text((x, top+27), f"# Int IP: {network_info['internal_ip']}", font=textFont, fill=255)
+        draw.text((x, top+39), f"# Username: {username}", font=textFont, fill=255)
+        draw.text((x, top+51), f"External IP: {network_info['external_ip']}", font=textFont, fill=255)
+      else:
+        draw.text((x, top+27), "No active network interface found.", font=textFont, fill=255)
       disp.image(image)
       disp.display()
       time.sleep(6)
@@ -519,7 +589,7 @@ while True:
       #draw.text((x, top+1), "________", font=textFont, fill=255)
       draw.text((x, top+15), "# Status: ON", font=textFont, fill=255)
       draw.text((x, top+30), "# Storage: SD/USB", font=textFont, fill=255)
-      draw.text((x, top+45), "# Disk: 21 of 32 GB Free", font=textFont, fill=255)
+      draw.text((x, top+45), f"# Disk: {free_space_gb:.0f} of {total_capacity_gb:.0f} GB Free", font=textFont, fill=255)
       #draw.text((x, top+45), "***: ", font=textFont, fill=255)
       disp.image(image)
       disp.display()
