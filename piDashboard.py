@@ -7,7 +7,6 @@ import SSD1306
 import os
 import subprocess
 import re
-#from pwd import getpwuid
 import psutil
 
 import socket
