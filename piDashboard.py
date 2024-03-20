@@ -425,7 +425,7 @@ while True:
   
   # Load default font.
   font = ImageFont.load_default()
-  headerFont = ImageFont.truetype('NimbusSanL-Bol.otf', 11.5)
+  headerFont = ImageFont.truetype('NimbusSanL-Bol.otf', 10.2)
   textFont = ImageFont.truetype('NimbusSanL-Reg.otf', 10)
 
   # Alternatively load a TTF font.  Make sure the .ttf font file is in the same directory as the python script!
@@ -452,7 +452,7 @@ while True:
 
   # Format the date and time string
   #formatted_datetime = now.strftime("%a|%b %d %Y|%H:%M")
-  formatted_datetime = now.strftime("%a, %b %d %Y, %H:%M")
+  formatted_datetime = now.strftime("%a | %b %d %Y | %H:%M")
   
   # Draw data on the image
   draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
@@ -460,7 +460,11 @@ while True:
   draw.text((x, top+15), "# CPU Temp: " + str(cpu_temp) + " *C", font=textFont, fill=255)
   draw.text((x, top+25), f"# RAM: {used_ram:.0f} /  {total_ram:.0f} MB", font=textFont, fill=255)
   draw.text((x, top+35), f"# Disk: {free_space_gb:.0f} of {total_capacity_gb:.0f} GB Free", font=textFont, fill=255)
-  draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
+  #draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
+  if current < 0:
+    draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
+  elif current >0:
+    draw.text((x, top+45), "# Charging at {:1.4f} A".format(current/1000), font=textFont, fill=255)
   draw.text((x, top+55), "# Battery: {:1.1f}%".format(p), font=textFont, fill=255)
   # Display image.
   disp.image(image)
