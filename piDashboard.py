@@ -286,11 +286,11 @@ while True:
     # Convert values from bytes to Megabytes (MB)
     used_ram = mem.used / (1024 * 1024)
     total_ram = mem.total / (1024 * 1024)
-    free_ram = mem.free / (1024 * 1024)
-    return used_ram, total_ram, free_ram
+    #free_ram = mem.free / (1024 * 1024)
+    return used_ram, total_ram
 
   # Get RAM information
-  used_ram, total_ram, free_ram = get_ram_info()
+  used_ram, total_ram = get_ram_info()
 
   # Print results. You can modify this for dashboard integration.
   #print(f"Used RAM: {used_ram:.1f} MB")
@@ -459,7 +459,7 @@ while True:
   draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
   #draw.text((x, top), ("_______________________"), font=headerFont, fill=255)
   draw.text((x, top+15), " CPU Temp: " + str(cpu_temp) + " ºC", font=textFont, fill=255)
-  draw.text((x, top+25), f" RAM: {free_ram:.0f} of {total_ram:.0f} MB Free", font=textFont, fill=255)
+  draw.text((x, top+25), f" RAM: {used_ram:.0f} of {total_ram:.0f} MB Used", font=textFont, fill=255)
   draw.text((x, top+35), f" Disk: {free_space_gb:.0f} of {total_capacity_gb:.0f} GB Free", font=textFont, fill=255)
   #draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
   if current < 0:
@@ -470,8 +470,6 @@ while True:
   # Display image.
   disp.image(image)
   disp.display()
-  time.sleep(0.6)
-
   
   #additional clear display image:
   #blankImage = Image.new('1', (128, 64))  # Create a new black image
