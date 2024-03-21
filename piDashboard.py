@@ -286,10 +286,11 @@ while True:
     # Convert values from bytes to Megabytes (MB)
     used_ram = mem.used / (1024 * 1024)
     total_ram = mem.total / (1024 * 1024)
-    return used_ram, total_ram
+    free_ram = mem.free / (1024 * 1024)
+    return used_ram, total_ram, free_ram
 
   # Get RAM information
-  used_ram, total_ram = get_ram_info()
+  used_ram, total_ram, free_ram = get_ram_info()
 
   # Print results. You can modify this for dashboard integration.
   #print(f"Used RAM: {used_ram:.1f} MB")
@@ -457,15 +458,15 @@ while True:
   # Draw data on the image
   draw.text((x, top), (formatted_datetime), font=headerFont, fill=255)
   #draw.text((x, top), ("_______________________"), font=headerFont, fill=255)
-  draw.text((x, top+15), "# CPU Temp: " + str(cpu_temp) + " ºC", font=textFont, fill=255)
-  draw.text((x, top+25), f"# RAM: {used_ram:.0f} /  {total_ram:.0f} MB", font=textFont, fill=255)
-  draw.text((x, top+35), f"# Disk: {free_space_gb:.0f} of {total_capacity_gb:.0f} GB Free", font=textFont, fill=255)
+  draw.text((x, top+15), " CPU Temp: " + str(cpu_temp) + " ºC", font=textFont, fill=255)
+  draw.text((x, top+25), f" RAM: {free_ram:.0f} of {total_ram:.0f} MB Free", font=textFont, fill=255)
+  draw.text((x, top+35), f" Disk: {free_space_gb:.0f} of {total_capacity_gb:.0f} GB Free", font=textFont, fill=255)
   #draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
   if current < 0:
-    draw.text((x, top+45), "# Power: {:1.3f} W".format(power), font=textFont, fill=255)
+    draw.text((x, top+45), " Power: {:1.3f} W".format(power), font=textFont, fill=255)
   elif current >0:
-    draw.text((x, top+45), "# Charging at {:1.4f} A".format(current/1000), font=textFont, fill=255)
-  draw.text((x, top+55), "# Battery: {:1.1f}%".format(p), font=textFont, fill=255)
+    draw.text((x, top+45), " Charging at {:1.4f} A".format(current/1000), font=textFont, fill=255)
+  draw.text((x, top+55), " Battery: {:1.1f}%".format(p), font=textFont, fill=255)
   # Display image.
   disp.image(image)
   disp.display()
@@ -540,12 +541,14 @@ while True:
       draw.text((x, top), ("Network Stats:"), font=headerFont, fill=255)
       #draw.text((x, top+1), "________", font=textFont, fill=255)
       if network_info['interface_name']:
-        draw.text((x, top+15), f"# Interface: {network_info['interface_name']}", font=textFont, fill=255)
-        draw.text((x, top+27), f"# Int IP: {network_info['internal_ip']}", font=textFont, fill=255)
-        draw.text((x, top+39), f"# Username: {username}", font=textFont, fill=255)
-        draw.text((x, top+51), f"External IP: {network_info['external_ip']}", font=textFont, fill=255)
+        draw.text((x, top+15), f" Interface: {network_info['interface_name']}", font=textFont, fill=255)
+        draw.text((x, top+27), f" Int IP: {network_info['internal_ip']}", font=textFont, fill=255)
+        draw.text((x, top+39), f" User: {username}", font=textFont, fill=255)
+        draw.text((x, top+51), f" Ext IP: {network_info['external_ip']}", font=textFont, fill=255)
       else:
-        draw.text((x, top+27), "No active network interface found.", font=textFont, fill=255)
+        draw.text((x, top+27), "No active ", font=textFont, fill=255)
+        draw.text((x, top+37), "network interface", font=textFont, fill=255)
+        draw.text((x, top+47), "found", font=textFont, fill=255)
       disp.image(image)
       disp.display()
       time.sleep(6)
