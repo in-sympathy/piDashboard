@@ -156,9 +156,10 @@ if [[ -f "piDashboard/bin/activate" ]]; then
   echo "Found venv. Trying to activate"
   source ${PWD##*/}/bin/activate
   sleep 1
-  echo "Activated. Upgrading requirements"
-  pip install --upgrade -r requirements.txt
-  echo "All of the requirements are up to date"
+  echo "Vitrual environment activated."
+  sleep 3
+  #pip install --upgrade -r requirements.txt
+  #echo "All of the requirements are up to date"
 else
   echo "Creating virtual environment:"
   sleep 1
@@ -169,6 +170,6 @@ else
   pip3 install -r requirements.txt
   pip freeze > requirements.txt
   echo "Ready. Launching piDashboard:"
-  sleep 1
+  sleep 3
 fi
 python3 piDashboard.py
